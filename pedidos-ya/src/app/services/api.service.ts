@@ -18,7 +18,9 @@ export class ApiService {
   async login(data:{email:string,password:string}){
     try{
       const response = await axios.post('http://localhost:3001/login',data)
-      const token = response.data.access_token
+      console.log('Respuesta completa del backend al login:', response.data);
+      const token = response.data.accessToken;
+      console.log('Token recibido:', token);
       localStorage.setItem('access_token', token);
     }catch (error){
       console.log('Error backend login:', error);
@@ -36,4 +38,6 @@ export class ApiService {
       throw new Error('Error en el registro');
     }
   }
+
+  
 }

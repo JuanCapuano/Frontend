@@ -3,6 +3,9 @@ import { Component } from '@angular/core';
 import { Form, FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ApiService } from '../../services/api.service';
+import { OrderService } from '../order.service';
+
 
 @Component({
   selector: 'app-order.component',
@@ -15,17 +18,18 @@ export class OrderComponent {
   formulario: FormGroup;
   error = '';
   success = '';
-  constructor(private fb: FormBuilder) {
+  apiService: any;
+  constructor(private fb: FormBuilder, private orderService : OrderService) {
     this.formulario = this.fb.group({
       restaurantId: [null, [ Validators.required, Validators.min(1) ]],
-      products: ["", [ Validators.required , Validators.minLength(1) ]],
+      products: [[], [ Validators.required , Validators.minLength(1) ]],
       location: this.fb.group({
         street: ["", [ Validators.required, Validators.minLength(4) ]],
         number: [null, [ Validators.required, Validators.min(1) ]],
         cityId: [null, [ Validators.required, Validators.min(1) ]],
-        coordinates: this.fb.group({
-          latitude: [null, [ Validators.required, Validators.min(-90), Validators.max(90) ]],
-          longitude: [null, [ Validators.required , Validators.min(-180), Validators.max(180) ]]
+        location: this.fb.group({
+          lat: [null, [ Validators.required, Validators.min(-90), Validators.max(90) ]],
+          lng: [null, [ Validators.required , Validators.min(-180), Validators.max(180) ]]
         })
 
     })
@@ -33,16 +37,31 @@ export class OrderComponent {
 
   }
 
-  enviarOrden(){
-    if(this.formulario.invalid){
-      this.formulario.markAllAsTouched();
-      this.error = 'Por favor, complete todos los campos requeridos.';
+   async enviarOrden() {
+    if (this.formulario.invalid) {
+      this.error = 'Por favor, completa todos los campos';
       this.success = '';
       return;
     }
+    try {
+      this.error = '';
+
+      const raw = this.formulario.value;
+
     
-    this.error = '';
-    this.success = 'Orden registrada exitosamente.';
-    console.log(this.formulario.value);
+      if (typeof raw.products === 'string') {
+       raw.products = raw.products
+         .split(',')
+         .map((id: string) => Number(id.trim()))
+         .filter((id: number) => !isNaN(id));
+    }
+
+      await this.orderService.crearOrden(raw);
+      this.formulario.reset();
+      this.success = 'Orden registrada exitosamente.';
+    } catch (error: any) {
+      this.error ='Error al registrar la orden';
+      this.success = '';
+    }
   }
 }
