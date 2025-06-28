@@ -5,6 +5,7 @@ import { Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { OrderService } from '../order.service';
+import { RESTAURANTES } from './mock';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class OrderComponent {
     });
 
   }
+
+   restaurantes = RESTAURANTES; 
 
    async enviarOrden() {
     if (this.formulario.invalid) {

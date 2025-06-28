@@ -6,8 +6,12 @@
   <form [formGroup]="formulario" (ngSubmit)="enviarOrden()">
 
     <div class="mb-3">
-      <label for="restaurantId">Restaurante ID</label>
-      <input type="number" class="form-control" id="restaurantId" formControlName="restaurantId" min="1" />
+      <label for="restaurantId">Restaurante</label>
+      <select class="form-control" id="restaurantId" formControlName="restaurantId">
+       <option *ngFor="let r of restaurantes" [value]="r.id">
+        {{ r.nombre }}
+       </option>
+      </select>
       
     </div>
 
