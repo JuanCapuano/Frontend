@@ -5,7 +5,8 @@ import { Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { OrderService } from '../order.service';
-import { RESTAURANTES } from './mock';
+import { PRODUCTOS, RESTAURANTES } from './mock';
+import { CIUDADES } from './mock';
 
 
 @Component({
@@ -38,7 +39,10 @@ export class OrderComponent {
 
   }
 
-   restaurantes = RESTAURANTES; 
+   restaurantes = RESTAURANTES;
+   cuidades = CIUDADES;
+   productos = PRODUCTOS;
+   
 
    async enviarOrden() {
     if (this.formulario.invalid) {

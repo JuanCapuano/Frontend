@@ -12,7 +12,8 @@ export const RESTAURANTES = [
 ];
 
 export const PRODUCTOS = [
-  { id: 1, nombre: 'Pizza de muzzarella' },
-  { id: 2, nombre: 'Hamburguesa doble' },
-  { id: 3, nombre: 'Empanadas de carne' }
+  { id: 1, nombre: 'Pizza' },
+  { id: 2, nombre: 'Lomito' },
+  { id: 3, nombre: 'Empanadas' },
+  { id: 4, nombre: 'Asado' }
 ];
