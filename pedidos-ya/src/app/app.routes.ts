@@ -4,6 +4,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { OrderComponent } from './pages/order/order.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { MyOrdersComponent } from './pages/myOrders/my-orders.component';
+import { PaysComponent } from './pages/pays/pays.component';
 
 export const routes: Routes = [
   {
@@ -20,6 +22,10 @@ export const routes: Routes = [
         component: HomeComponent,
       },
       {
+        path: 'myOrders', 
+        component: MyOrdersComponent,
+      },
+      {
         path: 'order', 
         component: OrderComponent
       },
@@ -28,6 +34,10 @@ export const routes: Routes = [
       },
       {path: 'register',
          component:RegisterComponent
+      },
+      {
+        path: 'pays',
+        component: PaysComponent,
       }
     ],
   },

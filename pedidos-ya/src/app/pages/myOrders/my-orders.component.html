@@ -1,0 +1,135 @@
+<!-- Botón para ver todos los pedidos -->
+<div class="button-group">
+  <button (click)="openAllOrdersModal()">Ver todos mis pedidos</button>
+</div>
+
+<!-- Input a la derecha del botón para ver pedido por ID -->
+<div class="button-group">
+  <button (click)="viewOrderById()">Ver pedido por ID</button>
+  <input type="number" [(ngModel)]="orderIdInput" placeholder="Ingrese ID de pedido" />
+</div>
+
+<!-- Modal para mostrar todos los pedidos -->
+<div *ngIf="showAllOrdersModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="closeAllOrdersModal()">&times;</span>
+    <h2>Todos mis pedidos</h2>
+    <div *ngIf="orders.length === 0" style="text-align:center; color:#888; margin-bottom:16px;">No hay pedidos registrados.</div>
+    <div *ngFor="let order of orders; let last = last">
+      <div class="order-block">
+        <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pedido #{{order.id}}</div>
+        <div><strong>Estado:</strong> {{getPedidoEstadoDescripcion(order.estado)}}</div>
+        <div><strong>Delivery:</strong> {{order.delivery}}</div>
+        <div><strong>Ciudad:</strong> {{order.ciudad}}</div>
+        <div><strong>Calle:</strong> {{order.calle}}</div>
+        <div><strong>Número:</strong> {{order.numero}}</div>
+        <div><strong>Latitud:</strong> {{order.latitud}}</div>
+        <div><strong>Longitud:</strong> {{order.longitud}}</div>
+      </div>
+      <hr *ngIf="!last" class="order-separator" />
+    </div>
+    <button class="modal-close-btn" type="button" (click)="closeAllOrdersModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal para mostrar pedido por ID -->
+<div *ngIf="showOrderByIdModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="closeOrderByIdModal()">&times;</span>
+    <h2>Información del pedido</h2>
+    <ng-container *ngIf="selectedOrderById; else notFound">
+      <div class="order-block">
+        <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pedido #{{selectedOrderById.id}}</div>
+        <div><strong>Estado:</strong> {{getPedidoEstadoDescripcion(selectedOrderById.estado)}}</div>
+        <div><strong>Delivery:</strong> {{selectedOrderById.delivery}}</div>
+        <div><strong>Ciudad:</strong> {{selectedOrderById.ciudad}}</div>
+        <div><strong>Calle:</strong> {{selectedOrderById.calle}}</div>
+        <div><strong>Número:</strong> {{selectedOrderById.numero}}</div>
+        <div><strong>Latitud:</strong> {{selectedOrderById.latitud}}</div>
+        <div><strong>Longitud:</strong> {{selectedOrderById.longitud}}</div>
+      </div>
+    </ng-container>
+    <ng-template #notFound>
+      <div style="text-align:center; color:#888;">No se encontró el pedido con ese ID.</div>
+    </ng-template>
+    <button class="modal-close-btn" type="button" (click)="closeOrderByIdModal()">Cerrar</button>
+  </div>
+</div>
+
+<!-- Alerta si no se ingresa ID -->
+<div *ngIf="showIdAlert" class="alert">
+  Ingrese un número de ID
+</div>
+
+<!-- Botón para abrir el modal de actualizar pedido -->
+<div class="button-group">
+  <button (click)="openUpdateOrderModal()">Actualizar pedido</button>
+</div>
+
+<!-- Modal para actualizar pedido -->
+<div *ngIf="showUpdateOrderModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="closeUpdateOrderModal()">&times;</span>
+    <h2>Actualizar pedido</h2>
+    <form (ngSubmit)="submitUpdateOrder()" #updateOrderForm="ngForm">
+      <label>ID del pedido:</label>
+      <input type="number" [(ngModel)]="updateOrderData.id" name="id" required />
+      <label>Status:</label>
+      <input type="text" [(ngModel)]="updateOrderData.status" name="status" required />
+      <label>Calle:</label>
+      <input type="text" [(ngModel)]="updateOrderData.street" name="street" required />
+      <label>Número:</label>
+      <input type="text" [(ngModel)]="updateOrderData.number" name="number" required />
+      <label>City ID:</label>
+      <input type="number" [(ngModel)]="updateOrderData.cityId" name="cityId" required />
+      <label>Latitud:</label>
+      <input type="number" [(ngModel)]="updateOrderData.lat" name="lat" required />
+      <label>Longitud:</label>
+      <input type="number" [(ngModel)]="updateOrderData.lng" name="lng" required />
+      <button class="modal-close-btn" type="submit">Actualizar pedido</button>
+      <button class="modal-close-btn" type="button" (click)="closeUpdateOrderModal()">Cerrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Botón para abrir el modal de actualizar estado de pedido -->
+<div class="button-group">
+  <button (click)="openPatchOrderModal()">Actualizar estado de pedido</button>
+</div>
+
+<!-- Modal para actualizar solo el estado de un pedido -->
+<div *ngIf="showPatchOrderModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="closePatchOrderModal()">&times;</span>
+    <h2>Actualizar estado de pedido</h2>
+    <form (ngSubmit)="submitPatchOrder()" #patchOrderForm="ngForm">
+      <label>ID del pedido:</label>
+      <input type="number" [(ngModel)]="patchOrderData.id" name="patchId" required />
+      <label>Nuevo estado:</label>
+      <input type="text" [(ngModel)]="patchOrderData.status" name="patchStatus" required />
+      <button class="modal-close-btn" type="submit">Actualizar estado</button>
+      <button class="modal-close-btn" type="button" (click)="closePatchOrderModal()">Cerrar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Botón para abrir el modal de eliminar pedido -->
+<div class="button-group">
+  <button (click)="openDeleteOrderModal()">Eliminar pedido</button>
+</div>
+
+<!-- Modal para eliminar un pedido -->
+<div *ngIf="showDeleteOrderModal" class="modal">
+  <div class="modal-content">
+    <span class="close" (click)="closeDeleteOrderModal()">&times;</span>
+    <h2>Eliminar pedido</h2>
+    <form (ngSubmit)="submitDeleteOrder()" #deleteOrderForm="ngForm">
+      <label>ID del pedido a eliminar:</label>
+      <input type="number" [(ngModel)]="deleteOrderId" name="deleteId" required />
+      <button class="modal-close-btn" type="submit" style="background:#dc3545;">Eliminar</button>
+      <button class="modal-close-btn" type="button" (click)="closeDeleteOrderModal()" style="background:#6c757d;">Cerrar</button>
+    </form>
+  </div>
+</div>
+
+

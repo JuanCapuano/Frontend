@@ -7,6 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { OrderService } from '../order.service';
 import { PRODUCTOS, RESTAURANTES } from './mock';
 import { CIUDADES } from './mock';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -21,7 +22,7 @@ export class OrderComponent {
   error = '';
   success = '';
   apiService: any;
-  constructor(private fb: FormBuilder, private orderService : OrderService) {
+  constructor(private fb: FormBuilder, private orderService : OrderService, private router: Router) {
     this.formulario = this.fb.group({
       restaurantId: [null, [ Validators.required, Validators.min(1) ]],
       products: [[], [ Validators.required , Validators.minLength(1) ]],
@@ -52,22 +53,16 @@ export class OrderComponent {
     }
     try {
       this.error = '';
-
       const raw = this.formulario.value;
-
-    
       if (typeof raw.products === 'string') {
-       raw.products = raw.products
-         .split(',')
-         .map((id: string) => Number(id.trim()))
-         .filter((id: number) => !isNaN(id));
-    }
-
-      await this.orderService.crearOrden(raw);
-      this.formulario.reset();
-      this.success = 'Orden registrada exitosamente.';
-    } catch (error: any) {
-      this.error ='Error al registrar la orden';
+        raw.products = raw.products.split(',');
+      }
+      // Simular creación de pedido y obtener orderId (ejemplo: 1)
+      const orderId = 1;
+      // Redirigir a /pays y pasar el orderId y flag para abrir el modal de pago
+      this.router.navigate(['/pays'], { state: { openPaymentModal: true, orderId } });
+    } catch (e) {
+      this.error = 'Error al enviar el pedido';
       this.success = '';
     }
   }

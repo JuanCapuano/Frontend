@@ -1,0 +1,182 @@
+<div class="pays-container">
+  <div class="button-group" style="display: flex; flex-direction: column; gap: 16px; margin-top: 32px;">
+    <button class="btn btn-primary" style="min-width: 220px; font-size: 1.1rem;" (click)="showPayments = true">Obtener todos los pagos</button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-primary" (click)="viewPaymentById()">Ver pago por ID</button>
+      <input type="number" [(ngModel)]="paymentIdInput" placeholder="ID de pago" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; width: 120px;" />
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-primary" (click)="openUpdatePaymentStatusModal()">Actualizar estado de pago</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-primary" (click)="openRefundModal()">Solicitar devolución</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-primary" (click)="openDeletePaymentModal()">Eliminar pago</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button class="btn btn-primary" (click)="openPaymentModal()">Realizar pago</button>
+    </div>
+  </div>
+
+  <!-- Modal de todos los pagos -->
+  <div *ngIf="showPayments" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="showPayments = false">&times;</span>
+      <h2>Pagos realizados</h2>
+      <div *ngIf="payments.length === 0" style="text-align:center; color:#888; margin-bottom:16px;">No hay pagos registrados.</div>
+      <div *ngFor="let payment of payments; let last = last">
+        <div class="order-block">
+          <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pago #{{payment.id}}</div>
+          <div><strong>Order ID:</strong> {{payment.orderId}}</div>
+          <div><strong>Estado:</strong> {{getPagoEstadoDescripcion(payment.status)}}</div>
+          <div><strong>Método:</strong> {{payment.paymentMethod}}</div>
+          <div><strong>Transacción:</strong> {{payment.transactionDetails.transactionId}}</div>
+          <div><strong>Estado de transacción:</strong> {{payment.transactionDetails.paymentStatus}}</div>
+          <div><strong>Fecha:</strong> {{payment.paymentTime | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+        <hr *ngIf="!last" class="order-separator" />
+      </div>
+      <button class="modal-close-btn" type="button" (click)="showPayments = false">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de pago por ID -->
+  <div *ngIf="showPaymentByIdModal" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="closePaymentByIdModal()">&times;</span>
+      <h2>Detalle del pago</h2>
+      <ng-container *ngIf="selectedPaymentById; else notFound">
+        <div class="order-block">
+          <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pago #{{selectedPaymentById.id}}</div>
+          <div><strong>Order ID:</strong> {{selectedPaymentById.orderId}}</div>
+          <div><strong>Estado:</strong> {{getPagoEstadoDescripcion(selectedPaymentById.status)}}</div>
+          <div><strong>Método:</strong> {{selectedPaymentById.paymentMethod}}</div>
+          <div><strong>Transacción:</strong> {{selectedPaymentById.transactionDetails.transactionId}}</div>
+          <div><strong>Estado de transacción:</strong> {{selectedPaymentById.transactionDetails.paymentStatus}}</div>
+          <div><strong>Fecha:</strong> {{selectedPaymentById.paymentTime | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+      </ng-container>
+      <ng-template #notFound>
+        <div style="text-align:center; color:#888;">No se encontró el pago con ese ID.</div>
+      </ng-template>
+      <button class="modal-close-btn" type="button" (click)="closePaymentByIdModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal de actualización de estado de pago -->
+  <div *ngIf="showUpdatePaymentStatusModal" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="closeUpdatePaymentStatusModal()">&times;</span>
+      <h2>Actualizar estado de pago</h2>
+      <form (ngSubmit)="submitUpdatePaymentStatus()">
+        <label>ID de pago:</label>
+        <input type="number" [(ngModel)]="updatePaymentIdInput" name="updatePaymentIdInput" required />
+        <label>Nuevo estado:</label>
+        <input type="text" [(ngModel)]="updatePaymentStatusInput" name="updatePaymentStatusInput" required />
+        <button class="modal-close-btn" type="submit">Actualizar</button>
+        <button class="modal-close-btn" type="button" (click)="closeUpdatePaymentStatusModal()">Cerrar</button>
+      </form>
+      <div *ngIf="updatedPayment">
+        <h3 style="text-align:center; color:#1976d2; margin-top:18px;">Estado actualizado</h3>
+        <div class="order-block">
+          <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pago #{{updatedPayment.id}}</div>
+          <div><strong>Order ID:</strong> {{updatedPayment.orderId}}</div>
+          <div><strong>Estado:</strong> {{getPagoEstadoDescripcion(updatedPayment.status)}}</div>
+          <div><strong>Método:</strong> {{updatedPayment.paymentMethod}}</div>
+          <div><strong>Transacción:</strong> {{updatedPayment.transactionDetails.transactionId}}</div>
+          <div><strong>Estado de transacción:</strong> {{updatedPayment.transactionDetails.paymentStatus}}</div>
+          <div><strong>Fecha:</strong> {{updatedPayment.paymentTime | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+      </div>
+      <div *ngIf="updatedPayment === null && updatePaymentIdInput">
+        <div style="text-align:center; color:#888;">No se encontró el pago con ese ID.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de devolución de pago -->
+  <div *ngIf="showRefundModal" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="closeRefundModal()">&times;</span>
+      <h2>Solicitar devolución</h2>
+      <form (ngSubmit)="submitRefund()">
+        <label>ID de pago:</label>
+        <input type="number" [(ngModel)]="refundPaymentIdInput" name="refundPaymentIdInput" required />
+        <label>Motivo:</label>
+        <input type="text" [(ngModel)]="refundReasonInput" name="refundReasonInput" required />
+        <button class="modal-close-btn" type="submit">Solicitar devolución</button>
+        <button class="modal-close-btn" type="button" (click)="closeRefundModal()">Cerrar</button>
+      </form>
+      <div *ngIf="refundResult">
+        <h3 style="text-align:center; color:#1976d2; margin-top:18px;">Devolución realizada</h3>
+        <div class="order-block">
+          <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pago #{{refundResult.id}}</div>
+          <div><strong>Order ID:</strong> {{refundResult.orderId}}</div>
+          <div><strong>Estado:</strong> {{getPagoEstadoDescripcion(refundResult.status)}}</div>
+          <div><strong>Método:</strong> {{refundResult.paymentMethod}}</div>
+          <div><strong>Transacción de devolución:</strong> {{refundResult.refundDetails?.refundTransactionId}}</div>
+          <div><strong>Estado de devolución:</strong> {{refundResult.refundDetails?.refundStatus}}</div>
+          <div><strong>Fecha de devolución:</strong> {{refundResult.refundTime | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+      </div>
+      <div *ngIf="refundResult === null && refundPaymentIdInput">
+        <div style="text-align:center; color:#888;">No se encontró el pago con ese ID.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de eliminar pago -->
+  <div *ngIf="showDeletePaymentModal" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="closeDeletePaymentModal()">&times;</span>
+      <h2>Eliminar pago</h2>
+      <form (ngSubmit)="submitDeletePayment()">
+        <label>ID de pago:</label>
+        <input type="number" [(ngModel)]="deletePaymentIdInput" name="deletePaymentIdInput" required />
+        <button class="modal-close-btn" type="submit">Eliminar</button>
+        <button class="modal-close-btn" type="button" (click)="closeDeletePaymentModal()">Cerrar</button>
+      </form>
+      <div *ngIf="deletePaymentResult === 'deleted'">
+        <div style="text-align:center; color:#1976d2; margin-top:18px; font-weight:600;">Pago eliminado correctamente.</div>
+      </div>
+      <div *ngIf="deletePaymentResult === 'notfound'">
+        <div style="text-align:center; color:#888; margin-top:18px;">No se encontró el pago con ese ID.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de realizar pago -->
+  <div *ngIf="showPaymentModal" class="modal">
+    <div class="modal-content">
+      <span class="close" (click)="closePaymentModal()">&times;</span>
+      <h2>Realizar pago</h2>
+      <form (ngSubmit)="submitPayment()">
+        <label>ID de pedido:</label>
+        <input type="number" [(ngModel)]="paymentForm.orderId" name="orderId" required />
+        <label>Monto:</label>
+        <input type="number" [(ngModel)]="paymentForm.amount" name="amount" required />
+        <label>Método de pago:</label>
+        <input type="text" [(ngModel)]="paymentForm.method" name="method" required />
+        <label>ID de transacción:</label>
+        <input type="text" [(ngModel)]="paymentForm.transactionId" name="transactionId" required />
+        <label>Estado de pago:</label>
+        <input type="text" [(ngModel)]="paymentForm.paymentStatus" name="paymentStatus" required />
+        <button class="modal-close-btn" type="submit">Pagar</button>
+        <button class="modal-close-btn" type="button" (click)="closePaymentModal()">Cerrar</button>
+      </form>
+      <div *ngIf="paymentResult">
+        <h3 style="text-align:center; color:#1976d2; margin-top:18px;">Pago realizado</h3>
+        <div class="order-block">
+          <div style="font-weight:600; color:#1976d2; margin-bottom:8px;">Pago #{{paymentResult.id}}</div>
+          <div><strong>Order ID:</strong> {{paymentResult.orderId}}</div>
+          <div><strong>Estado:</strong> {{getPagoEstadoDescripcion(paymentResult.status)}}</div>
+          <div><strong>Método:</strong> {{paymentResult.paymentMethod}}</div>
+          <div><strong>Transacción:</strong> {{paymentResult.transactionDetails.transactionId}}</div>
+          <div><strong>Estado de transacción:</strong> {{paymentResult.transactionDetails.paymentStatus}}</div>
+          <div><strong>Fecha:</strong> {{paymentResult.paymentTime | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
