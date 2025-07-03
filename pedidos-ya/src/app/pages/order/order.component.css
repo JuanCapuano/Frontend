@@ -1,20 +1,13 @@
-/* body */
-:host {
-  display: block;
-  background-color: #ffffff; /*color del background*/
-  min-height: 100vh;
-  padding-bottom: 2rem;
-}
-
 /* Título */
 h2 {
   font-size: 2rem;
   font-weight: bold;
   color: #dc3545;
   margin-bottom: 20px;
+
 }
 
-/* formulario */
+/* Formulario */
 form {
   max-width: 500px;
   margin: 0 auto; 
@@ -36,7 +29,7 @@ input.form-control:focus {
 
 /* Botón */
 button {
-  margin-top: 0px;
+  margin-top: px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -47,3 +40,8 @@ button {
 .alert-success {
   margin-top: 0.75rem;
 }
+
+
+
+
+

@@ -58,11 +58,4 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/order'])
   }
 
-  goToMyOrders(){
-    this.router.navigate(['/myOrders'])
-  }
-
-  goToPays() {
-    this.router.navigate(['/pays']);
-  }
 }
