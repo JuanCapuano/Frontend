@@ -39,5 +39,16 @@ export class ApiService {
     }
   }
 
+  async getMe() {
+  const token = localStorage.getItem('access_token');
+  if (!token) throw new Error('No hay token, logueate primero');
+
+  const response = await axios.get('http://localhost:3001/me', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  return response.data;
+}
+
   
 }

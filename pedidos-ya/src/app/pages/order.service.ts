@@ -16,6 +16,8 @@ export class OrderService {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log('Respuesta del backend:', response.data);
     return response.data;
   }
 }
